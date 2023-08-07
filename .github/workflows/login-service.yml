@@ -7,7 +7,7 @@ on:
       - login-service/**
 jobs:
   call-workflow-passing-data:
-    uses: zakred/github-workflows/.github/workflows/docker/docker-build-push.yml@v1
+    uses: zakred/github-workflows/.github/workflows/docker-build-push.yml@v1
     secrets:
       DOCKER_REGISTRY_SECRET: ${{ secrets.DOCKER_REGISTRY_SECRET }}
       DOCKER_REGISTRY_USER: zakred
