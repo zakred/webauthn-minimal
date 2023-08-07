@@ -1,0 +1,15 @@
+name: Web Docker Image
+
+on:
+  push:
+    branches: [ "master"]
+    paths:
+      - web/**
+jobs:
+  call-workflow-passing-data:
+    uses: zakred/github-workflows/.github/workflows/docker-build-push.yml@v1
+    secrets:
+      DOCKER_REGISTRY_SECRET: ${{ secrets.DOCKER_REGISTRY_SECRET }}
+      DOCKER_REGISTRY_USER: zakred
+      DOCKER_IMAGE_NAME: zakred/webauthn-web:latest
+      DOCKER_CONTEXT_PATH: web

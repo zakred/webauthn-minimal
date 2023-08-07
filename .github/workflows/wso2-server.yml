@@ -1,0 +1,15 @@
+name: WSO2 Docker Image
+
+on:
+  push:
+    branches: [ "master"]
+    paths:
+      - wso2-server/**
+jobs:
+  call-workflow-passing-data:
+    uses: zakred/github-workflows/.github/workflows/docker-build-push.yml@v1
+    secrets:
+      DOCKER_REGISTRY_SECRET: ${{ secrets.DOCKER_REGISTRY_SECRET }}
+      DOCKER_REGISTRY_USER: zakred
+      DOCKER_IMAGE_NAME: zakred/webauthn-wso2:latest
+      DOCKER_CONTEXT_PATH: wso2-server
