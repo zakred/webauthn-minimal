@@ -13,7 +13,6 @@ FROM wso2/wso2is:5.11.0
 ARG WSO2_IS_VERSION=5.11.0
 ARG FIDO2_COMPONENT_VERSION=5.2.8
 ARG WSO2_REPO_PATH=/home/wso2carbon/wso2is-$WSO2_IS_VERSION/repository
-ARG WSO2_WEBAPPS_PATH=$WSO2_REPO_PATH/deployment/server/webapps
 
 RUN rm -v $WSO2_REPO_PATH/components/plugins/org.wso2.carbon.identity.application.authenticator.fido2_$FIDO2_COMPONENT_VERSION.jar
 COPY --from=build-fido2 --chown=wso2carbon:wso2 /org.wso2.carbon.identity.application.authenticator.fido2-$FIDO2_COMPONENT_VERSION.jar \
