@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <script type="text/javascript" src="registration.js"></script>
+        <script type="text/javascript" src="cbor.js"></script>
+        <script type="text/javascript">
+            const _registerDevice = async function() {
+                const regPayload = document.getElementById('start-regis-response-payload').value;
+                const res = await registerDevice(regPayload);
+                document.getElementById('finish-reg-payload').value = JSON.stringify(res, undefined, 4);
+            }
+        </script>
+    </head>
+    <body>
+        <h1>WebAuthn</h1>
+        <input id="start-regis-response-payload"/>
+        <button onclick="_registerDevice()">Register Device</button>
+        <br />
+        <h3>Finish registration payload:</h3>
+        <textarea id="finish-reg-payload" cols="70" rows="50"></textarea>
+    </body>
+</html>

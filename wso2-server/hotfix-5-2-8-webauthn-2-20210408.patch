@@ -1,0 +1,67 @@
+diff --git a/components/org.wso2.carbon.identity.application.authenticator.fido2/src/main/java/org/wso2/carbon/identity/application/authenticator/fido2/core/WebAuthnService.java b/components/org.wso2.carbon.identity.application.authenticator.fido2/src/main/java/org/wso2/carbon/identity/application/authenticator/fido2/core/WebAuthnService.java
+index 0b6fe4e..12c6152 100644
+--- a/components/org.wso2.carbon.identity.application.authenticator.fido2/src/main/java/org/wso2/carbon/identity/application/authenticator/fido2/core/WebAuthnService.java
++++ b/components/org.wso2.carbon.identity.application.authenticator.fido2/src/main/java/org/wso2/carbon/identity/application/authenticator/fido2/core/WebAuthnService.java
+@@ -20,6 +20,7 @@ package org.wso2.carbon.identity.application.authenticator.fido2.core;
+ 
+ import com.fasterxml.jackson.core.JsonParseException;
+ import com.fasterxml.jackson.core.JsonProcessingException;
++import com.fasterxml.jackson.databind.DeserializationFeature;
+ import com.fasterxml.jackson.databind.JsonMappingException;
+ import com.fasterxml.jackson.databind.ObjectMapper;
+ import com.yubico.internal.util.WebAuthnCodecs;
+@@ -96,7 +97,14 @@ public class WebAuthnService {
+ 
+     private final Clock clock = Clock.systemDefaultZone();
+     private static final SecureRandom random = new SecureRandom();
+-    private final ObjectMapper jsonMapper = WebAuthnCodecs.json();
++    private final ObjectMapper jsonMapper = getObjectMapper();
++
++    private ObjectMapper getObjectMapper() {
++        ObjectMapper mapper = WebAuthnCodecs.json();
++        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
++        return mapper;
++    }
++
+     private static final FIDO2DeviceStoreDAO userStorage = FIDO2DeviceStoreDAO.getInstance();
+ 
+     private static ArrayList origins = null;
+@@ -457,6 +465,12 @@ public class WebAuthnService {
+                     requestId);
+         }
+         AssertionRequest request = getAssertionRequest(cacheEntry);
++        log.info("------------ AssertionRequest: ------------");
++        log.info(request);
++        ByteArray userHandle = response.getCredential().getResponse().getUserHandle().get();
++        log.info("User handle");
++        log.info(userHandle);
++
+         RelyingParty relyingParty = buildRelyingParty(cacheEntry.getOrigin());
+         FIDO2Cache.getInstance().clearCacheEntryByRequestId(new FIDO2CacheKey(requestId));
+ 
+@@ -614,11 +628,15 @@ public class WebAuthnService {
+                 .name(FIDO2AuthenticatorConstants.APPLICATION_NAME)
+                 .build();
+ 
+-        return RelyingParty.builder()
++        RelyingParty rp = RelyingParty.builder()
+                 .identity(rpIdentity)
+                 .credentialRepository(userStorage)
+                 .origins(new HashSet<String>(origins))
++                .allowUnrequestedExtensions(true)
+                 .build();
++          log.info("RelyingParty:");
++          log.info(rp);
++          return rp;
+     }
+ 
+     @Deprecated
+@@ -784,6 +802,8 @@ public class WebAuthnService {
+ 
+         AssertionRequest request;
+         try {
++            log.info("AssertionRequest JSON is:");
++            log.info(cacheEntry.getAssertionRequest());
+             request = jsonMapper.readValue(cacheEntry.getAssertionRequest(), AssertionRequest.class);
+         } catch (IOException e) {
+             throw new AuthenticationFailedException("Assertion for finish authentication flow failed due to failure " +

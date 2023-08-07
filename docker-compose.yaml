@@ -1,0 +1,44 @@
+version: '2.3'
+
+services:
+  wso2:
+    image: zakred/webauthn-wso2:latest
+    build:
+      context: wso2-server
+    mem_limit: 500m
+    init: true
+    restart: unless-stopped
+    environment:
+      JVM_MEM_OPTS: "-XX:MinRAMPercentage=50.0 -XX:InitialRAMPercentage=60.0 -XX:MaxRAMPercentage=75.0"
+    ports:
+      - "9443:9443"
+
+  web:
+    image: zakred/webauthn-web:latest
+    build:
+      context: web
+    mem_limit: 100m
+    init: true
+    restart: unless-stopped
+    environment:
+      LOGIN_SERVER_FQDN: http://localhost:3000
+    ports:
+      - "8080:80"
+
+
+  login-service:
+    image: zakred/webauthn-login-service:latest
+    build:
+      context: login-service
+    mem_limit: 150m
+    init: true
+    restart: unless-stopped
+    environment:
+      WSO2_FQDN: https://localhost:9443
+      CLIENT_ID: _2dFjRlLCZPPbV4EnbL02AXIy6Ya
+      CLIENT_SECRET: ywbDEJDPuQFfhtocdArLIkTex18a
+    # Using host network, because otherwise rpId would be wso2 instead of localhost
+    # and will be rejected by the browser without a valid TLS certificate.
+    network_mode: "host"
+    #ports:
+    #  - "3000:3000"

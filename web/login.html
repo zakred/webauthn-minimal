@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script type="text/javascript" src="login.js"></script>
+        <script type="text/javascript">
+            let data = {};
+            let assertion = {};
+            const _startAuth = async function() {
+                data = await startAuth();
+                document.getElementById('result-1').value = JSON.stringify(data, undefined, 4);
+            }
+            const _signChallenge = async function() {
+                assertion = await signChallenge(data);
+                document.getElementById('result-2').value =
+                    `Result: Success\nCredential ID: ${assertion.id}`;
+            }
+            const _sendSignedChallenge = async function() {
+                const res = await sendSignedChallenge(data, assertion);
+                document.getElementById('result-3').value = JSON.stringify(res, undefined, 2);
+            }
+        </script>
+    </head>
+    <body>
+        <h1>WebAuthn Login</h1>
+        <h4>1. Get challenge from backend.</h4>
+        <button onclick="_startAuth()">Start authentication</button>
+        <br />
+        <textarea id="result-1" cols="60" rows=12"></textarea>
+        <br />
+        <h4>2. Sign challenge with security key device.</h4>
+        <button onclick="_signChallenge()">Sign challenge</button>
+        <br />
+        <textarea id="result-2" cols="60" rows=6"></textarea>
+        <br />
+        <h4>3. Send security key result to backend to get authenticated and receive OAuth2/OIDC tokens.</h4>
+        <button onclick="_sendSignedChallenge()">Send signed challenge</button>
+        <br />
+        <textarea id="result-3" cols="60" rows=6"></textarea>
+    </body>
+</html>

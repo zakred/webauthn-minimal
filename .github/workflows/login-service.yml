@@ -1,0 +1,15 @@
+name: Login Service Docker Image
+
+on:
+  push:
+    branches: [ "master"]
+    paths:
+      - login-service/**
+jobs:
+  call-workflow-passing-data:
+    uses: zakred/github-workflows/docker/docker-build-push.yml@v1
+    secrets:
+      DOCKER_REGISTRY_SECRET: ${{ secrets.DOCKER_REGISTRY_SECRET }}
+      DOCKER_REGISTRY_USER: zakred
+      DOCKER_IMAGE_NAME: zakred/webauthn-login-service:latest
+      DOCKER_CONTEXT_PATH: login-service
